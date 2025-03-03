@@ -60,16 +60,12 @@ export const config = {
       }
       return session;
     },
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session }: any) {
       if (user) {
+        // Assign user properties to the token
+        token.id = user.id;
         token.role = user.role;
-        if (user.name === "NO_NAME") {
-          token.name = user.email!.split("@");
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { name: token.name },
-          });
-        }
+
         if (trigger === "signIn" || trigger === "signUp") {
           const cookiesObject = await cookies();
           const sessionCartId = cookiesObject.get("sessionCartId")?.value;
@@ -80,12 +76,12 @@ export const config = {
             });
 
             if (sessionCart) {
-              // Delete current user cart
+              // Overwrite any existing user cart
               await prisma.cart.deleteMany({
                 where: { userId: user.id },
               });
 
-              // Assign new cart
+              // Assign the guest cart to the logged-in user
               await prisma.cart.update({
                 where: { id: sessionCart.id },
                 data: { userId: user.id },
@@ -93,11 +89,6 @@ export const config = {
             }
           }
         }
-      }
-
-      // Handle session updates
-      if (session?.user.name && trigger === "update") {
-        token.name = session.user.name;
       }
 
       return token;
