@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { formatNumberWithDecimal } from "@/lib/utils";
-import { PAYMENT_METHODS } from "@/lib/constants";
+import { formatNumberWithDecimal } from "./utils";
+import { PAYMENT_METHODS } from "./constants";
 
 const currency = z
   .string()
@@ -45,7 +45,7 @@ export const signUpFormSchema = z
       .min(6, "Confirm password must be at least 6 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password don't match",
+    message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
@@ -80,7 +80,7 @@ export const shippingAddressSchema = z.object({
   lng: z.number().optional(),
 });
 
-//Payment Schema
+// Schema for payment method
 export const paymentMethodSchema = z
   .object({
     type: z.string().min(1, "Payment method is required"),
@@ -90,7 +90,7 @@ export const paymentMethodSchema = z
     message: "Invalid payment method",
   });
 
-// Insert Order Schema
+// Schema for inserting order
 export const insertOrderSchema = z.object({
   userId: z.string().min(1, "User is required"),
   itemsPrice: currency,
@@ -103,6 +103,7 @@ export const insertOrderSchema = z.object({
   shippingAddress: shippingAddressSchema,
 });
 
+// Schema for inserting an order item
 export const insertOrderItemSchema = z.object({
   productId: z.string(),
   slug: z.string(),
@@ -112,13 +113,15 @@ export const insertOrderItemSchema = z.object({
   qty: z.number(),
 });
 
+// Schema for the PayPal paymentResult
 export const paymentResultSchema = z.object({
   id: z.string(),
   status: z.string(),
   email_address: z.string(),
   pricePaid: z.string(),
 });
-// Update Profile Schema
+
+// Schema for updating the user profile
 export const updateProfileSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().min(3, "Email must be at least 3 characters"),
@@ -128,4 +131,17 @@ export const updateProfileSchema = z.object({
 export const updateUserSchema = updateProfileSchema.extend({
   id: z.string().min(1, "ID is required"),
   role: z.string().min(1, "Role is required"),
+});
+
+// Schema to insert reviews
+export const insertReviewSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(3, "Description must be at least 3 characters"),
+  productId: z.string().min(1, "Product is required"),
+  userId: z.string().min(1, "User is required"),
+  rating: z.coerce
+    .number()
+    .int()
+    .min(1, "Rating must be at least 1")
+    .max(5, "Rating must be at most 5"),
 });
