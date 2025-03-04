@@ -1,8 +1,7 @@
-import React from "react";
-import ModeToggle from "@/components/shared/header/mode-toggle";
 import { Button } from "@/components/ui/button";
+import ModeToggle from "./mode-toggle";
 import Link from "next/link";
-import { EllipsisVertical, ShoppingCart, UserIcon } from "lucide-react";
+import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -10,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import UserButton from "@/components/shared/header/user-button";
+import UserButton from "./user-button";
 
 const Menu = () => {
   return (
